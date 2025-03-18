@@ -1,0 +1,63 @@
+var script = document.createElement('script');
+script.src = "https://code.jquery.com/jquery-3.6.0.min.js";
+
+script.onload = function() {
+    function deleteContent(CSRF_TOKEN, as_id) {
+        if (typeof $ === "function") {
+            $.ajax({
+                url: "/th/content/",
+                type: "DELETE",
+                contentType: "application/json",
+                headers: {
+                    'csrf-token': CSRF_TOKEN
+                },
+                data: JSON.stringify({
+                    "contentIds": [
+                        {
+                            "id": as_id,
+                            "uuid": "080b59ce-bf7d-48d7-b016-fcac7b85ada4"
+                        }
+                    ],
+                    "filters": {
+                        "limit": 100,
+                        "page": 23,
+                        "sortBy": "create_desc",
+                        "status": "review"
+                    }
+                }),
+                success: function(response) {
+                    console.log("Success:", response);
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error:", xhr.responseText);
+                }
+            });
+        } else {
+            console.error("jQuery is not loaded");
+        }
+    }
+
+    var doctext = document.documentElement.outerHTML;
+    var token_ = doctext.match(/csrfToken%22%3A%22([^%]+)%22/);
+    token_ = token_[1];
+
+    let wrappers = document.querySelectorAll('.upload-tile__wrapper');
+    let extractedValues = Array.from(wrappers)
+        .map(wrapper => {
+            let src = wrapper.querySelector('img')?.src;
+            let match = src?.match(/F_(.*?)_/);
+            return match ? match[1] : null;
+        })
+        .filter(value => value);
+
+	let count = 0; 
+    extractedValues.forEach(function(value, index) {
+        deleteContent(token_, value);
+		count++;
+		if (count === extractedValues.length) {
+			alert('เรียบร้อย');
+		}
+    });
+};
+
+document.head.appendChild(script);
