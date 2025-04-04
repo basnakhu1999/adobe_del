@@ -56,6 +56,12 @@ script.onload = function() {
 		count++;
 		if (count === extractedValues.length) {
 			alert('เรียบร้อย');
+			let urlObj = new URL(location.href);
+			let currentPage = parseInt(urlObj.searchParams.get("page"));
+			urlObj.searchParams.set("page", currentPage - 1);
+
+			let newUrl = urlObj.toString();
+			location.href = newUrl;
 		}
     });
 };
